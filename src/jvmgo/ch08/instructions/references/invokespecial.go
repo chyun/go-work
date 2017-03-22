@@ -1,13 +1,13 @@
 package references
 
-import "jvmgo/ch08/instructions/base"
-import "jvmgo/ch08/rtda"
-import "jvmgo/ch08/rtda/heap"
+import "jvmgo/ch06/instructions/base"
+import "jvmgo/ch06/rtda"
 
 // Invoke instance method;
 // special handling for superclass, private, and instance initialization method invocations
 type INVOKE_SPECIAL struct{ base.Index16Instruction }
 
+// hack!
 func (self *INVOKE_SPECIAL) Execute(frame *rtda.Frame) {
 	currentClass := frame.Method().Class()
 	cp := currentClass.ConstantPool()
@@ -25,7 +25,6 @@ func (self *INVOKE_SPECIAL) Execute(frame *rtda.Frame) {
 	if ref == nil {
 		panic("java.lang.NullPointerException")
 	}
-
 	if resolvedMethod.IsProtected() &&
 		resolvedMethod.Class().IsSuperClassOf(currentClass) &&
 		resolvedMethod.Class().GetPackageName() != currentClass.GetPackageName() &&

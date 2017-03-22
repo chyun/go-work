@@ -1,8 +1,8 @@
 package base
 
 import "fmt"
-import "jvmgo/ch08/rtda"
-import "jvmgo/ch08/rtda/heap"
+import "jvmgo/ch07/rtda"
+import "jvmgo/ch07/rtda/heap"
 
 func InvokeMethod(invokerFrame *rtda.Frame, method *heap.Method) {
 	thread := invokerFrame.Thread()
@@ -17,7 +17,6 @@ func InvokeMethod(invokerFrame *rtda.Frame, method *heap.Method) {
 		}
 	}
 
-	// hack!
 	if method.IsNative() {
 		if method.Name() == "registerNatives" {
 			thread.PopFrame()

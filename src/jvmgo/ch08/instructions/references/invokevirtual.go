@@ -1,9 +1,9 @@
 package references
 
 import "fmt"
-import "jvmgo/ch08/instructions/base"
-import "jvmgo/ch08/rtda"
-import "jvmgo/ch08/rtda/heap"
+import "jvmgo/ch07/instructions/base"
+import "jvmgo/ch07/rtda"
+import "jvmgo/ch07/rtda/heap"
 
 // Invoke instance method; dispatch based on class
 type INVOKE_VIRTUAL struct{ base.Index16Instruction }
@@ -61,10 +61,6 @@ func _println(stack *rtda.OperandStack, descriptor string) {
 		fmt.Printf("%v\n", stack.PopLong())
 	case "(D)V":
 		fmt.Printf("%v\n", stack.PopDouble())
-	case "(Ljava/lang/String;)V":
-		jStr := stack.PopRef()
-		goStr := heap.GoString(jStr)
-		fmt.Println(goStr)
 	default:
 		panic("println: " + descriptor)
 	}

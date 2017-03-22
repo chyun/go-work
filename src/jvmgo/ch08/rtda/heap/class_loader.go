@@ -1,8 +1,8 @@
 package heap
 
 import "fmt"
-import "jvmgo/ch08/classfile"
-import "jvmgo/ch08/classpath"
+import "jvmgo/ch06/classfile"
+import "jvmgo/ch06/classpath"
 
 /*
 class names:
@@ -12,16 +12,14 @@ class names:
     - array classes: [Ljava/lang/Object; ...
 */
 type ClassLoader struct {
-	cp          *classpath.Classpath
-	verboseFlag bool
-	classMap    map[string]*Class // loaded classes
+	cp       *classpath.Classpath
+	classMap map[string]*Class // loaded classes
 }
 
-func NewClassLoader(cp *classpath.Classpath, verboseFlag bool) *ClassLoader {
+func NewClassLoader(cp *classpath.Classpath) *ClassLoader {
 	return &ClassLoader{
-		cp:          cp,
-		verboseFlag: verboseFlag,
-		classMap:    make(map[string]*Class),
+		cp:       cp,
+		classMap: make(map[string]*Class),
 	}
 }
 
@@ -31,39 +29,14 @@ func (self *ClassLoader) LoadClass(name string) *Class {
 		return class
 	}
 
-	if name[0] == '[' {
-		// array class
-		return self.loadArrayClass(name)
-	}
-
 	return self.loadNonArrayClass(name)
-}
-
-func (self *ClassLoader) loadArrayClass(name string) *Class {
-	class := &Class{
-		accessFlags: ACC_PUBLIC, // todo
-		name:        name,
-		loader:      self,
-		initStarted: true,
-		superClass:  self.LoadClass("java/lang/Object"),
-		interfaces: []*Class{
-			self.LoadClass("java/lang/Cloneable"),
-			self.LoadClass("java/io/Serializable"),
-		},
-	}
-	self.classMap[name] = class
-	return class
 }
 
 func (self *ClassLoader) loadNonArrayClass(name string) *Class {
 	data, entry := self.readClass(name)
 	class := self.defineClass(data)
 	link(class)
-
-	if self.verboseFlag {
-		fmt.Printf("[Loaded %s from %s]\n", name, entry)
-	}
-
+	fmt.Printf("[Loaded %s from %s]\n", name, entry)
 	return class
 }
 
@@ -187,9 +160,7 @@ func initStaticFinalVar(class *Class, field *Field) {
 			val := cp.GetConstant(cpIndex).(float64)
 			vars.SetDouble(slotId, val)
 		case "Ljava/lang/String;":
-			goStr := cp.GetConstant(cpIndex).(string)
-			jStr := JString(class.Loader(), goStr)
-			vars.SetRef(slotId, jStr)
+			panic("todo")
 		}
 	}
 }

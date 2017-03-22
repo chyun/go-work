@@ -1,37 +1,25 @@
 package main
 
 import "fmt"
-import "jvmgo/ch08/instructions"
-import "jvmgo/ch08/instructions/base"
-import "jvmgo/ch08/rtda"
-import "jvmgo/ch08/rtda/heap"
+import "jvmgo/ch06/instructions"
+import "jvmgo/ch06/instructions/base"
+import "jvmgo/ch06/rtda"
+import "jvmgo/ch06/rtda/heap"
 
-func interpret(method *heap.Method, logInst bool, args []string) {
+func interpret(method *heap.Method, logInst bool) {
 	thread := rtda.NewThread()
 	frame := thread.NewFrame(method)
 	thread.PushFrame(frame)
 
-	jArgs := createArgsArray(method.Class().Loader(), args)
-	frame.LocalVars().SetRef(0, jArgs)
-
-	defer catchErr(thread)
+	defer catchErr(frame)
 	loop(thread, logInst)
 }
 
-func createArgsArray(loader *heap.ClassLoader, args []string) *heap.Object {
-	stringClass := loader.LoadClass("java/lang/String")
-	argsArr := stringClass.ArrayClass().NewArray(uint(len(args)))
-	jArgs := argsArr.Refs()
-	for i, arg := range args {
-		jArgs[i] = heap.JString(loader, arg)
-	}
-	return argsArr
-}
-
-func catchErr(thread *rtda.Thread) {
+func catchErr(frame *rtda.Frame) {
 	if r := recover(); r != nil {
-		logFrames(thread)
-		panic(r)
+		//fmt.Printf("LocalVars:%v\n", frame.LocalVars())
+		//fmt.Printf("OperandStack:%v\n", frame.OperandStack())
+		//panic(r)
 	}
 }
 
@@ -48,12 +36,11 @@ func loop(thread *rtda.Thread, logInst bool) {
 		inst := instructions.NewInstruction(opcode)
 		inst.FetchOperands(reader)
 		frame.SetNextPC(reader.PC())
-
-		if logInst {
-			logInstruction(frame, inst)
-		}
-
+        if (logInst) {
+        	logInstruction(frame, inst)
+        }
 		// execute
+		//fmt.Printf("pc:%2d inst:%T %v\n", pc, inst, inst)
 		inst.Execute(frame)
 		if thread.IsStackEmpty() {
 			break
@@ -61,20 +48,6 @@ func loop(thread *rtda.Thread, logInst bool) {
 	}
 }
 
-func logInstruction(frame *rtda.Frame, inst base.Instruction) {
-	method := frame.Method()
-	className := method.Class().Name()
-	methodName := method.Name()
-	pc := frame.Thread().PC()
-	fmt.Printf("%v.%v() #%2d %T %v\n", className, methodName, pc, inst, inst)
-}
-
-func logFrames(thread *rtda.Thread) {
-	for !thread.IsStackEmpty() {
-		frame := thread.PopFrame()
-		method := frame.Method()
-		className := method.Class().Name()
-		fmt.Printf(">> pc:%4d %v.%v%v \n",
-			frame.NextPC(), className, method.Name(), method.Descriptor())
-	}
+func (self *Thread) IsStackEmpty() bool {
+    return self.stack.isEmpty()
 }

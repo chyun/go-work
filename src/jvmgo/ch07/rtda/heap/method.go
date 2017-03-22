@@ -1,13 +1,13 @@
 package heap
 
-import "jvmgo/ch07/classfile"
+import "jvmgo/ch06/classfile"
 
 type Method struct {
 	ClassMember
 	maxStack     uint
 	maxLocals    uint
 	code         []byte
-	argSlotCount uint
+	argSlotCount  uint
 }
 
 func newMethods(class *Class, cfMethods []*classfile.MemberInfo) []*Method {
@@ -39,7 +39,7 @@ func (self *Method) calcArgSlotCount() {
 		}
 	}
 	if !self.IsStatic() {
-		self.argSlotCount++ // `this` reference
+		self.argSlotCount++
 	}
 }
 
@@ -72,6 +72,7 @@ func (self *Method) MaxLocals() uint {
 func (self *Method) Code() []byte {
 	return self.code
 }
+
 func (self *Method) ArgSlotCount() uint {
-	return self.argSlotCount
+    return self.argSlotCount
 }

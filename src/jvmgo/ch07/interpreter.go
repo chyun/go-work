@@ -1,24 +1,25 @@
 package main
 
 import "fmt"
-import "jvmgo/ch07/instructions"
-import "jvmgo/ch07/instructions/base"
-import "jvmgo/ch07/rtda"
-import "jvmgo/ch07/rtda/heap"
+import "jvmgo/ch06/instructions"
+import "jvmgo/ch06/instructions/base"
+import "jvmgo/ch06/rtda"
+import "jvmgo/ch06/rtda/heap"
 
 func interpret(method *heap.Method, logInst bool) {
 	thread := rtda.NewThread()
 	frame := thread.NewFrame(method)
 	thread.PushFrame(frame)
 
-	defer catchErr(thread)
+	defer catchErr(frame)
 	loop(thread, logInst)
 }
 
-func catchErr(thread *rtda.Thread) {
+func catchErr(frame *rtda.Frame) {
 	if r := recover(); r != nil {
-		logFrames(thread)
-		panic(r)
+		//fmt.Printf("LocalVars:%v\n", frame.LocalVars())
+		//fmt.Printf("OperandStack:%v\n", frame.OperandStack())
+		//panic(r)
 	}
 }
 
@@ -35,12 +36,11 @@ func loop(thread *rtda.Thread, logInst bool) {
 		inst := instructions.NewInstruction(opcode)
 		inst.FetchOperands(reader)
 		frame.SetNextPC(reader.PC())
-
-		if logInst {
-			logInstruction(frame, inst)
-		}
-
+        if (logInst) {
+        	logInstruction(frame, inst)
+        }
 		// execute
+		//fmt.Printf("pc:%2d inst:%T %v\n", pc, inst, inst)
 		inst.Execute(frame)
 		if thread.IsStackEmpty() {
 			break
@@ -48,20 +48,6 @@ func loop(thread *rtda.Thread, logInst bool) {
 	}
 }
 
-func logInstruction(frame *rtda.Frame, inst base.Instruction) {
-	method := frame.Method()
-	className := method.Class().Name()
-	methodName := method.Name()
-	pc := frame.Thread().PC()
-	fmt.Printf("%v.%v() #%2d %T %v\n", className, methodName, pc, inst, inst)
-}
-
-func logFrames(thread *rtda.Thread) {
-	for !thread.IsStackEmpty() {
-		frame := thread.PopFrame()
-		method := frame.Method()
-		className := method.Class().Name()
-		fmt.Printf(">> pc:%4d %v.%v%v \n",
-			frame.NextPC(), className, method.Name(), method.Descriptor())
-	}
+func (self *Thread) IsStackEmpty() bool {
+    return self.stack.isEmpty()
 }

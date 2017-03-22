@@ -17,7 +17,6 @@ func InvokeMethod(invokerFrame *rtda.Frame, method *heap.Method) {
 		}
 	}
 
-	// hack!
 	if method.IsNative() {
 		if method.Name() == "registerNatives" {
 			thread.PopFrame()

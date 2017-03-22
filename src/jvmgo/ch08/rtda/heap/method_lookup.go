@@ -1,14 +1,14 @@
 package heap
 
-func LookupMethodInClass(class *Class, name, descriptor string) *Method {
-	for c := class; c != nil; c = c.superClass {
-		for _, method := range c.methods {
-			if method.name == name && method.descriptor == descriptor {
-				return method
-			}
-		}
-	}
-	return nil
+func lookupMethod(class *Class, name, descriptor string) *Method {
+    for c := class; c != nil; c = c.superClass {
+    	for _, method := range c.methods {
+    		if method.name == name && method.descriptor == descriptor {
+    			return method
+    		}
+    	}
+    }
+    return nil
 }
 
 func lookupMethodInInterfaces(ifaces []*Class, name, descriptor string) *Method {
@@ -18,12 +18,10 @@ func lookupMethodInInterfaces(ifaces []*Class, name, descriptor string) *Method 
 				return method
 			}
 		}
-
 		method := lookupMethodInInterfaces(iface.interfaces, name, descriptor)
 		if method != nil {
 			return method
 		}
 	}
-
 	return nil
 }

@@ -1,6 +1,6 @@
 package rtda
 
-import "jvmgo/ch08/rtda/heap"
+import "jvmgo/ch06/rtda/heap"
 
 // stack frame
 type Frame struct {
@@ -39,8 +39,4 @@ func (self *Frame) NextPC() int {
 }
 func (self *Frame) SetNextPC(nextPC int) {
 	self.nextPC = nextPC
-}
-
-func (self *Frame) RevertNextPC() {
-	self.nextPC = self.thread.pc
 }

@@ -1,7 +1,7 @@
 package stack
 
-import "jvmgo/ch08/instructions/base"
-import "jvmgo/ch08/rtda"
+import "jvmgo/ch06/instructions/base"
+import "jvmgo/ch06/rtda"
 
 // Pop the top operand stack value
 type POP struct{ base.NoOperandsInstruction }

@@ -1,8 +1,8 @@
 package references
 
-import "jvmgo/ch08/instructions/base"
-import "jvmgo/ch08/rtda"
-import "jvmgo/ch08/rtda/heap"
+import "jvmgo/ch06/instructions/base"
+import "jvmgo/ch06/rtda"
+import "jvmgo/ch06/rtda/heap"
 
 // Determine if object is of given type
 type INSTANCE_OF struct{ base.Index16Instruction }
